@@ -4,106 +4,163 @@ import "./App.css";
 import React, {useState} from "react";
 import {evaluate} from "mathjs";
 
-export default function App() {
-    const [display, setDisplay] = useState("0");
-    const [result, setResult] = useState("0");
+function App() {
+    const [display, setDisplay] = useState(0);
+    const [result, setResult] = useState("");
 
-    const handleInputNumber = (event) => {
-        const input = event.target.innerText;
-        if (display === "0") {
-            setDisplay(input);
-            setResult(input);
-        } else {
-            setDisplay(display + input);
-            setResult(display + input);
-        }
+    const calc = () => {
+        setDisplay(evaluate(result));
+        setResult(result + " = " + evaluate(result));
     };
 
-    const handleInputOperators = (event) => {
-        const operator = event.target.innerText;
-        setDisplay(display + " " + operator + " ");
+    const handleInputNumber = (data) => {
+        const Operator = (value) => {
+            return isNaN(value) && value !== ".";
+        };
+
+        setDisplay(
+            display == 0
+                ? data
+                : /=/.test(result)
+                ? Operator(data)
+                    ? display + data
+                    : data
+                : /\.\d*$/.test(display) === true && data === "."
+                ? display
+                : Operator(data) | Operator(display)
+                ? data
+                : display + data
+        );
+        setResult(
+            /=/.test(result)
+                ? Operator(data)
+                    ? display + " " + data
+                    : data
+                : result === 0
+                ? data
+                : /\.\d*$/.test(display) === true && data === "."
+                ? result
+                : /[\*\/\+]+\-$/.test(result) && Operator(data)
+                ? result.replace(/[\*\/\+]+\-$/, "") + " " + data
+                : Operator(display) && Operator(data) && data !== "-"
+                ? result.slice(0, -1) + data
+                : result + data
+        );
     };
 
-    const handleEqual = () => {
-        setDisplay(evaluate(display));
-        setResult(display + " = " + evaluate(display));
+    const clear = () => {
+        setDisplay(0);
+        setResult("");
     };
 
     const handleDicimal = () => {
-        const array = display.split(" ");
-        const lastElement = array[array.length - 1];
-        if (!lastElement.includes(".")) {
+        const arrDisp = display.split(" ");
+        const lastElementDisp = arrDisp[arrDisp.length - 1];
+        if (!lastElementDisp.includes(".")) {
             setDisplay(display + ".");
         }
-    };
-
-    const handleClear = () => {
-        setDisplay("0");
-        setResult("0");
+        const arrResult = result.split(/\+|\-|\*|\\/);
+        const lastElementResult = arrResult[arrResult.length - 1];
+        if (!lastElementResult.includes(".")) {
+            setResult(result + ".");
+        }
     };
 
     return (
         <div className='App'>
             <div id='container'>
                 <div className='display'>
-                    <div>{result}</div>
-                    <div id='display'>{display}</div>
+                    <p id='output'>{result}</p>
+                    <h1 id='display'>{display}</h1>
                 </div>
-                <div id='clear' className='button' onClick={handleClear}>
+                <div id='clear' className='button' onClick={clear}>
                     AC
                 </div>
                 <div
                     id='divide'
                     className='button'
-                    onClick={handleInputOperators}>
+                    onClick={() => handleInputNumber("/")}>
                     /
                 </div>
                 <div
                     id='multiply'
                     className='button'
-                    onClick={handleInputOperators}>
+                    onClick={() => handleInputNumber("*")}>
                     *
                 </div>
-                <div id='seven' className='button' onClick={handleInputNumber}>
+                <div
+                    id='seven'
+                    className='button'
+                    onClick={() => handleInputNumber("7")}>
                     7
                 </div>
-                <div id='eight' className='button' onClick={handleInputNumber}>
+                <div
+                    id='eight'
+                    className='button'
+                    onClick={() => handleInputNumber("8")}>
                     8
                 </div>
-                <div id='nine' className='button' onClick={handleInputNumber}>
+                <div
+                    id='nine'
+                    className='button'
+                    onClick={() => handleInputNumber("9")}>
                     9
                 </div>
                 <div
                     id='subtract'
                     className='button'
-                    onClick={handleInputOperators}>
+                    onClick={() => handleInputNumber("-")}>
                     -
                 </div>
-                <div id='four' className='button' onClick={handleInputNumber}>
+                <div
+                    id='four'
+                    className='button'
+                    onClick={() => handleInputNumber("4")}>
                     4
                 </div>
-                <div id='five' className='button' onClick={handleInputNumber}>
+                <div
+                    id='five'
+                    className='button'
+                    onClick={() => handleInputNumber("5")}>
                     5
                 </div>
-                <div id='six' className='button' onClick={handleInputNumber}>
+                <div
+                    id='six'
+                    className='button'
+                    onClick={() => handleInputNumber("6")}>
                     6
                 </div>
-                <div id='add' className='button' onClick={handleInputOperators}>
+                <div
+                    id='add'
+                    className='button'
+                    onClick={() => handleInputNumber("+")}>
                     +
                 </div>
-                <div id='one' className='button' onClick={handleInputNumber}>
+                <div
+                    id='one'
+                    className='button'
+                    onClick={() => handleInputNumber("1")}>
                     1
                 </div>
-                <div id='two' className='button' onClick={handleInputNumber}>
+                <div
+                    id='two'
+                    className='button'
+                    onClick={() => handleInputNumber("2")}>
                     2
                 </div>
-                <div id='three' className='button' onClick={handleInputNumber}>
+                <div
+                    id='three'
+                    className='button'
+                    onClick={() => handleInputNumber("3")}>
                     3
                 </div>
-                <div id='equals' className='button' onClick={handleEqual}>
+                <div id='equals' className='button' onClick={calc}>
                     =
                 </div>
-                <div id='zero' className='button' onClick={handleInputNumber}>
+                <div
+                    id='zero'
+                    className='button'
+                    onClick={() => handleInputNumber("0")}>
                     0
                 </div>
                 <div id='decimal' className='button' onClick={handleDicimal}>
@@ -113,3 +170,5 @@ export default function App() {
         </div>
     );
 }
+
+export default App;
