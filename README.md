@@ -7,6 +7,5 @@
 
 ## Tools used
 ### - React
-### - Redux
 ### - CSS
 ### - HTML
